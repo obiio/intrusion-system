@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cloud Integrity Broker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <button class="theme-toggle" id="themeToggle">
+        <span class="material-icons">dark_mode</span>
+      </button>
+      <button class="logout hidden" id="logoutBtn">Logout</button>
+      <h1>Cloud Integrity Broker</h1>
+      <p>Multi-Level Intrusion Detection & Log Management</p>
+    </header>
+
+    <!-- Auth Container -->
+    <div id="authContainer" class="auth-container active">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="tab active" data-tab="login">Sign In</button>
+          <button class="tab" data-tab="signup">Sign Up</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form active">
+          <h2>Welcome Back</h2>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="you@company.com" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required />
+          </div>
+          <button id="loginBtn" class="btn-primary">Sign In</button>
+          <p class="demo-text">Demo: any email + password <strong>demo123</strong></p>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" class="auth-form">
+          <h2>Create Account</h2>
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="signupName" placeholder="John Doe" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="signupEmail" placeholder="you@company.com" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="signupPassword" placeholder="Min 8 chars, 1 number" required />
+            <div id="passwordStrength" class="password-meter">
+              <div class="bar"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="signupRole">
+              <option value="user">Cloud User</option>
+              <option value="auditor">Auditor</option>
+              <option value="admin">System Admin (Approval Required)</option>
+            </select>
+          </div>
+          <button id="signupBtn" class="btn-primary">Create Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+      <!-- Admin View -->
+      <div id="adminView">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="material-icons">people</span>
+            <div>
+              <h3>Active Users</h3>
+              <p id="activeUsers">0</p>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <span class="material-icons">warning</span>
+            <div>
+              <h3>Intrusions</h3>
+              <p id="intrusions">0</p>
+            </div>
+          </div>
+          <div class="stat-card danger">
+            <span class="material-icons">block</span>
+            <div>
+              <h3>Blacklisted</h3>
+              <p id="blacklistCount">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="material-icons">security</span> Security Levels</h3>
+          <div class="levels">
+            <div class="level success"><span>Level 1</span> Safe</div>
+            <div class="level warning"><span>Level 2</span> Suspicious</div>
+            <div class="level danger"><span>Level 3</span> Blocked</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3><span class="material-icons">list_alt</span> Audit Requests</h3>
+          <table id="auditTable">
+            <thead><tr><th>User</th><th>IP</th><th>Time</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3><span class="material-icons">block</span> Blacklisted IPs</h3>
+          <table id="blacklistTable">
+            <thead><tr><th>IP</th><th>Reason</th><th>Blocked</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Auditor View -->
+      <div id="auditorView" class="hidden">
+        <div class="card">
+          <h3><span class="material-icons">visibility</span> Request Audit</h3>
+          <div class="form-group">
+            <input type="email" id="auditUserEmail" placeholder="Enter user email" />
+          </div>
+          <button id="requestAuditBtn" class="btn-sm">Request Logs</button>
+        </div>
+        <div class="card">
+          <h3><span class="material-icons">history</span> Audit Results</h3>
+          <div id="logViewer" class="log-output"></div>
+        </div>
+      </div>
+
+      <!-- User View -->
+      <div id="userView" class="hidden">
+        <div class="card">
+          <h3><span class="material-icons">verified_user</span> Your Account</h3>
+          <p><strong>Email:</strong> <span id="userEmail"></span></p>
+          <p><strong>Role:</strong> <span id="userRoleBadge" class="badge"></span></p>
+          <p><strong>Last Login:</strong> <span id="lastLogin"></span></p>
+        </div>
+        <div class="card">
+          <h3><span class="material-icons">monitor</span> Activity Log</h3>
+          <button id="viewMyLogs" class="btn-sm">Load Logs</button>
+          <div id="myLogs" class="log-output"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="auth.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
